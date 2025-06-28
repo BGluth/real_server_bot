@@ -1,0 +1,8 @@
+[package]
+name = "reals_server_bot_discord_scraper"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]

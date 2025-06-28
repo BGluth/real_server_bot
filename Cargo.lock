@@ -3,5 +3,13 @@
 version = 4
 
 [[package]]
-name = "real_server_bot"
+name = "reals_server_bot_cli"
+version = "0.1.0"
+
+[[package]]
+name = "reals_server_bot_db"
+version = "0.1.0"
+
+[[package]]
+name = "reals_server_bot_discord_scraper"
 version = "0.1.0"

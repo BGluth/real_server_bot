@@ -1,6 +1,16 @@
-[package]
-name = "real_server_bot"
+[workspace]
+
+members = [
+    "crates/cli",
+    "crates/db",
+    "crates/discord_scraper",
+]
+resolver = "2"
+
+[workspace.package]
 version = "0.1.0"
 edition = "2024"
+authors = ["bgluth <gluthb@gmail.com>"]
+license = "MIT/Apache-2.0"
 
-[dependencies]
+[workspace.dependencies]
