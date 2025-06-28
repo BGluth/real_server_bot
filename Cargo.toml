@@ -1,6 +1,7 @@
 [workspace]
 
 members = [
+    "crates/common",
     "crates/cli",
     "crates/db",
     "crates/discord_scraper",

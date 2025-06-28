@@ -6,3 +6,5 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
+clap = { version = "4.5.40", features = ["derive"] }
+reals_server_bot_common = { path = "../common" }
