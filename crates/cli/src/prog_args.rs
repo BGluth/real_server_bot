@@ -1,11 +1,11 @@
 use clap::{Args, Parser, Subcommand};
-use reals_server_bot_common::types::{DiscordChannelId, DiscordServerId};
+use reals_server_bot_common::types::{DiscordBotToken, DiscordChannelId, DiscordServerId};
 
 #[derive(Debug, Parser)]
 #[command(version, about, long_about = None)]
 pub(crate) struct ProgArgs {
     #[command(subcommand)]
-    cmd: Command,
+    pub(crate) cmd: Command,
 }
 
 #[derive(Debug, Subcommand)]
@@ -16,8 +16,9 @@ pub(crate) enum Command {
 
 #[derive(Args, Debug)]
 pub(crate) struct ListenArgs {
-    pub server_to_listen_to: DiscordServerId,
-    pub channels_to_listen_to: Vec<DiscordChannelId>,
+    pub(crate) bot_token: DiscordBotToken,
+    pub(crate) server_to_listen_to: DiscordServerId,
+    pub(crate) channels_to_listen_to: Vec<DiscordChannelId>,
 }
 
 #[derive(Args, Debug)]

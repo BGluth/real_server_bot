@@ -6,3 +6,6 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
+reals_server_bot_common = { path = "../common" }
+serenity = "0.12.4"
+tokio = { version = "1.45.1", features = ["parking_lot", "rt", "rt-multi-thread"] }
