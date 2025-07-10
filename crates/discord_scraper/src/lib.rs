@@ -1,3 +1,5 @@
+mod game_msg_parser;
+
 use reals_server_bot_common::types::{
     DiscordBotToken, DiscordChannelId, DiscordServerId, DiscordUserId,
 };

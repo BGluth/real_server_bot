@@ -6,6 +6,8 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
+derive_builder = "0.20.2"
 reals_server_bot_common = { path = "../common" }
+regex = "1.11.1"
 serenity = "0.12.4"
 tokio = { version = "1.45.1", features = ["parking_lot", "rt", "rt-multi-thread"] }
