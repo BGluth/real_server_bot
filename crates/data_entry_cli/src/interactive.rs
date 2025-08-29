@@ -43,35 +43,37 @@ fn process_and_handle_user_input(state: &mut InteractiveState) -> anyhow::Result
         None => return Ok(false), // Not an error. Just silently wait for the next line.
     };
 
-    let remaining_words: Vec<_> = words.collect();
+    let remaining_words: String = words.collect();
 
     match first_word {
         "add" => add_set(&remaining_words, state)?,
-        "date" => set_date(&remaining_words),
+        "date" => set_date(&remaining_words, state)?,
         "quit" | "exit" => should_exit = true,
-        _ => {
-            println!("{} is not recognized as a valid command", first_word);
-        }
+        _ => println!("{} is not recognized as a valid command", first_word),
     }
 
     Ok(should_exit)
 }
 
-fn add_set(set_str: &[&str], state: &mut InteractiveState) -> anyhow::Result<()> {
-    let single_discord_msg_str = set_str.join(" "); // Silly, but we just need to get this going for now.
+fn add_set(set_str: &str, state: &mut InteractiveState) -> anyhow::Result<()> {
     let set_data = state
         .set_parser
-        .extract_game_set_data_from_discord_msg_if_any(&single_discord_msg_str)
+        .extract_game_set_data_from_discord_msg_if_any(set_str)
         .ok_or(anyhow!("Unable to extract set data from string!"))?;
 
     Ok(())
 }
 
-fn set_date(date_arg: &[&str]) {}
+fn set_date(date_arg: &str, state: &mut InteractiveState) -> anyhow::Result<()> {
+    state.active_date = dateparser::parse(date_arg)?;
+    Ok(())
+}
 
 fn read_input_from_stdin() -> String {
     let mut buf = String::new();
-    stdin().read_to_string(&mut buf).expect("Unable to read line from standard input!");
+    stdin()
+        .read_to_string(&mut buf)
+        .expect("Unable to read line from standard input!");
 
     buf
 }
