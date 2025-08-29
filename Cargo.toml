@@ -5,6 +5,7 @@ members = [
     "crates/cli",
     "crates/db",
     "crates/discord_scraper",
+    "crates/data_entry_cli"
 ]
 resolver = "2"
 

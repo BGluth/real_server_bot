@@ -1,24 +1,16 @@
 use derive_builder::Builder;
 
-pub(crate) struct GameSetMessageParser {}
-
-impl Default for GameSetMessageParser {
-    fn default() -> Self {
-        Self {}
-    }
-}
+#[derive(Debug, Default)]
+pub struct GameSetMessageParser {}
 
 impl GameSetMessageParser {
-    pub(crate) fn extract_game_set_data_from_discord_msg_if_any(
-        &self,
-        msg: &str,
-    ) -> Option<GameSetData> {
+    pub fn extract_game_set_data_from_discord_msg_if_any(&self, msg: &str) -> Option<GameSetData> {
         todo!()
     }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
-pub(crate) struct GameSetData {
+pub struct GameSetData {
     p1_info: PlayerInfoForSet,
     p2_info: PlayerInfoForSet,
     set_type: SetType,
