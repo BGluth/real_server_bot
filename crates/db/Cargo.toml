@@ -8,3 +8,5 @@ license.workspace = true
 [dependencies]
 reals_server_bot_common ={ path = "../common" }
 chrono = "0.4.41"
+anyhow = "1.0.99"
+camino = "1.1.12"
