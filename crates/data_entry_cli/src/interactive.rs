@@ -1,28 +1,30 @@
 use std::io::{Read, stdin};
 
+use reals_server_bot_db::db::MatchDb;
 use reals_server_bot_discord_scraper::game_msg_parser::GameSetMessageParser;
 
 use crate::types::SetDate;
 use anyhow::anyhow;
 
-#[derive(Debug)]
 struct InteractiveState {
     set_parser: GameSetMessageParser,
     active_date: SetDate,
+    db: Box<dyn MatchDb>,
 }
 
 impl InteractiveState {
-    fn new(active_date: SetDate) -> Self {
+    fn new(active_date: SetDate, db: Box<dyn MatchDb>) -> Self {
         Self {
             set_parser: GameSetMessageParser::default(),
             active_date,
+            db,
         }
     }
 }
 
-pub(crate) fn interactive_loop(active_date: SetDate) {
+pub(crate) fn interactive_loop(active_date: SetDate, db: Box<dyn MatchDb>) {
     let mut should_exit = false;
-    let mut state = InteractiveState::new(active_date);
+    let mut state = InteractiveState::new(active_date, db);
 
     while !should_exit {
         match process_and_handle_user_input(&mut state) {

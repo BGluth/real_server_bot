@@ -7,6 +7,9 @@ use clap::{Args, Parser, Subcommand};
 pub(crate) struct ProgArgs {
     #[command(subcommand)]
     pub(crate) cmd: EntryCommand,
+
+    #[arg(short, long, default_value = ".")]
+    pub(crate) match_db_root_dir: String,
 }
 #[derive(Clone, Debug, Subcommand)]
 pub(crate) enum EntryCommand {

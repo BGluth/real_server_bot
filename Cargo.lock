@@ -432,10 +432,12 @@ name = "data_entry_cli"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "camino",
  "chrono",
  "clap",
  "dateparser",
  "log",
+ "reals_server_bot_db",
  "reals_server_bot_discord_scraper",
 ]
 
