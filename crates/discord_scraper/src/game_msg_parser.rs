@@ -1,4 +1,4 @@
-use derive_builder::Builder;
+use reals_server_bot_common::types::GameSetData;
 
 #[derive(Debug, Default)]
 pub struct GameSetMessageParser {}
@@ -9,38 +9,11 @@ impl GameSetMessageParser {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq, Hash)]
-pub struct GameSetData {
-    p1_info: PlayerInfoForSet,
-    p2_info: PlayerInfoForSet,
-    set_type: SetType,
-}
-
-#[derive(Builder, Clone, Debug, Eq, PartialEq, Hash)]
-pub(crate) struct PlayerInfoForSet {
-    #[builder(setter(into))]
-    name: String,
-    score: usize,
-
-    #[builder(setter(into, strip_option))]
-    character: Option<String>,
-}
-
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
-pub(crate) enum SetType {
-    Ft2,
-    Ft3,
-    Ft5,
-    Ft10,
-    Ftn(usize),
-    Unknown,
-}
-
 #[cfg(test)]
 mod tests {
-    use crate::game_msg_parser::{
-        GameSetData, GameSetMessageParser, PlayerInfoForSet, PlayerInfoForSetBuilder, SetType,
-    };
+    use reals_server_bot_common::types::{GameSetData, PlayerInfoForSetBuilder, SetType};
+
+    use crate::game_msg_parser::GameSetMessageParser;
 
     struct TestCase {
         input: &'static str,

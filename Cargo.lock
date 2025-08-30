@@ -1284,10 +1284,17 @@ dependencies = [
 [[package]]
 name = "reals_server_bot_common"
 version = "0.1.0"
+dependencies = [
+ "derive_builder",
+]
 
 [[package]]
 name = "reals_server_bot_db"
 version = "0.1.0"
+dependencies = [
+ "chrono",
+ "reals_server_bot_common",
+]
 
 [[package]]
 name = "reals_server_bot_discord_scraper"

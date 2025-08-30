@@ -6,3 +6,5 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
+reals_server_bot_common ={ path = "../common" }
+chrono = "0.4.41"
