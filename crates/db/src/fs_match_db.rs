@@ -1,7 +1,10 @@
-use camino::{Utf8Path, Utf8PathBuf};
-use reals_server_bot_common::types::DiscordUserId;
+use std::collections::HashMap;
 
-use crate::db::{MatchDb, PlayedSet, PlayerId, TierId};
+use camino::{Utf8Path, Utf8PathBuf};
+use reals_server_bot_common::types::{DiscordUserId, GameSetData, TierInfo};
+use serde::{Deserialize, Serialize};
+
+use crate::db::{MatchDb, PlayedSet, PlayerId, PlayerInfo, SetId, TierId};
 
 #[derive(Debug)]
 pub struct FsMatchDb {
@@ -27,7 +30,7 @@ impl MatchDb for FsMatchDb {
         todo!()
     }
 
-    fn get_player_info(&self, p_id: PlayerId) -> anyhow::Result<Option<crate::db::PlayerInfo>> {
+    fn get_player_info(&self, p_id: PlayerId) -> anyhow::Result<Option<PlayerInfo>> {
         todo!()
     }
 }
@@ -37,3 +40,10 @@ impl FsMatchDb {
         todo!()
     }
 }
+
+#[derive(Debug, Deserialize, Serialize)]
+struct PlayerToNameLookup(HashMap<PlayerId, String>);
+
+struct SetLookup(HashMap<SetId, GameSetData>);
+
+struct TierLookup(HashMap<TierId, TierInfo>);

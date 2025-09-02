@@ -1,4 +1,5 @@
 use derive_builder::Builder;
+use serde::{Deserialize, Serialize};
 
 pub type DiscordChannelId = u64;
 pub type DiscordServerId = u64;
@@ -6,14 +7,14 @@ pub type DiscordBotToken = String;
 
 pub type DiscordUserId = u64;
 
-#[derive(Clone, Debug, Eq, PartialEq, Hash)]
+#[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct GameSetData {
     pub p1_info: PlayerInfoForSet,
     pub p2_info: PlayerInfoForSet,
     pub set_type: SetType,
 }
 
-#[derive(Builder, Clone, Debug, Eq, PartialEq, Hash)]
+#[derive(Builder, Clone, Deserialize, Debug, Eq, Hash, PartialEq, Serialize)]
 pub struct PlayerInfoForSet {
     #[builder(setter(into))]
     pub name: String,
@@ -23,7 +24,7 @@ pub struct PlayerInfoForSet {
     pub character: Option<String>,
 }
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+#[derive(Copy, Clone, Debug, Deserialize, Eq, PartialEq, Hash, Serialize)]
 pub enum SetType {
     Ft2,
     Ft3,
@@ -32,3 +33,6 @@ pub enum SetType {
     Ftn(usize),
     Unknown,
 }
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct TierInfo {}

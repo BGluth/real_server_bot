@@ -1,5 +1,6 @@
 use chrono::{DateTime, Utc};
 use reals_server_bot_common::types::{DiscordUserId, GameSetData};
+use serde::{Deserialize, Serialize};
 
 pub trait MatchDb {
     fn add_set(&mut self, set: PlayedSet) -> anyhow::Result<()>;
@@ -26,9 +27,9 @@ pub struct PlayerInfo {
     tier: TierId,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Hash, Serialize)]
 pub struct SetId(u64);
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Hash, Serialize)]
 pub struct PlayerId(u64);
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Hash, Serialize)]
 pub struct TierId(u64);
