@@ -5,7 +5,7 @@ use camino::Utf8PathBuf;
 use chrono::Utc;
 use clap::Parser;
 use log::info;
-use reals_server_bot_db::fs_match_db::FsMatchDb;
+use reals_server_bot_db::db::MatchDb;
 
 use crate::{
     interactive::interactive_loop,
@@ -29,7 +29,7 @@ fn run() -> anyhow::Result<()> {
     let db_root_path = Utf8PathBuf::from_str(&p_args.match_db_root_dir)
         .with_context(|| "Database root file is not a valid path")?;
 
-    let db = Box::new(FsMatchDb::open_or_crate(&db_root_path));
+    let db = MatchDb::open_or_crate(&db_root_path)?;
 
     match p_args.cmd {
         EntryCommand::Interactive(interactive_args) => {

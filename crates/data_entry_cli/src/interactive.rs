@@ -9,11 +9,11 @@ use anyhow::anyhow;
 struct InteractiveState {
     set_parser: GameSetMessageParser,
     active_date: SetDate,
-    db: Box<dyn MatchDb>,
+    db: MatchDb,
 }
 
 impl InteractiveState {
-    fn new(active_date: SetDate, db: Box<dyn MatchDb>) -> Self {
+    fn new(active_date: SetDate, db: MatchDb) -> Self {
         Self {
             set_parser: GameSetMessageParser::default(),
             active_date,
@@ -22,7 +22,7 @@ impl InteractiveState {
     }
 }
 
-pub(crate) fn interactive_loop(active_date: SetDate, db: Box<dyn MatchDb>) {
+pub(crate) fn interactive_loop(active_date: SetDate, db: MatchDb) {
     let mut should_exit = false;
     let mut state = InteractiveState::new(active_date, db);
 
