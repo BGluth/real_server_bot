@@ -9,5 +9,7 @@ license.workspace = true
 anyhow = "1.0.99"
 camino = "1.1.12"
 derive_builder = "0.20.2"
+log = "0.4.28"
 serde = { version = "1.0.219", features = ["derive"] }
 thiserror = "2.0.16"
+toml = "0.9.5"

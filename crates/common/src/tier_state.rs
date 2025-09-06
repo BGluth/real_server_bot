@@ -1,11 +1,13 @@
-use std::{collections::HashMap, ops::Not};
+use std::{collections::HashMap, fs, ops::Not};
 
+use anyhow::Context;
 use camino::Utf8Path;
-use serde::Deserialize;
+use log::info;
+use serde::{Deserialize, Serialize};
 
 use crate::types::{GameSetData, SetType, TierId};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct TierState {
     tier_map: [HashMap<SetType, [[i32; 2]; 3]>; 3],
 }
@@ -39,7 +41,26 @@ impl Default for TierState {
 
 impl TierState {
     pub fn load_from_disk_or_create(path: &Utf8Path) -> anyhow::Result<Self> {
-        todo!()
+        Ok(match fs::read(path) {
+            Ok(v) => toml::from_slice(&v).with_context(|| {
+                format!(
+                    "Unable to deserialize \"{:?}\". It's probably corrupt.",
+                    path
+                )
+            })?,
+            Err(_) => {
+                info!("No \"tier_points_map.toml\" found. Creating one using default values...");
+                let v = Self::default();
+
+                // Should never fail.
+                let serialized_tier_state = toml::to_string_pretty(&v)?;
+
+                fs::write(path, serialized_tier_state)
+                    .with_context(|| format!("Failed writing \"{:?}\" to disk!.", path))?;
+
+                v
+            }
+        })
     }
 
     pub fn calculate_points_changes_for_both_players_in_set(
