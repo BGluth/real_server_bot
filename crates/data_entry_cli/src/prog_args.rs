@@ -2,6 +2,7 @@ use std::str::FromStr;
 
 use chrono::{DateTime, Utc};
 use clap::{Args, Parser, Subcommand};
+use reals_server_bot_db::db::PlayerId;
 
 #[derive(Parser, Debug)]
 pub(crate) struct ProgArgs {
@@ -14,7 +15,10 @@ pub(crate) struct ProgArgs {
 #[derive(Clone, Debug, Subcommand)]
 pub(crate) enum EntryCommand {
     Interactive(CliDate),
+    GetPlayerSets(GetPlayerSetsArgs),
+    GetPlayerId(GetPlayerIdArgs),
     PrintMonth(CliDate),
+    TracePlayerMonthStats(TracePlayerMonthStats),
 }
 
 #[derive(Clone, Debug)]
@@ -36,4 +40,20 @@ impl FromStr for CliDate {
             date: Some(dateparser::parse(s)?),
         })
     }
+}
+
+#[derive(Args, Clone, Debug)]
+pub(crate) struct GetPlayerSetsArgs {
+    pub(crate) p_id: PlayerId,
+    pub(crate) num_sets: usize,
+}
+
+#[derive(Args, Clone, Debug)]
+pub(crate) struct GetPlayerIdArgs {
+    pub(crate) player_name: String,
+}
+
+#[derive(Args, Clone, Debug)]
+pub(crate) struct TracePlayerMonthStats {
+    pub(crate) p_id: PlayerId,
 }

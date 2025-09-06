@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use camino::Utf8Path;
 use chrono::{DateTime, Utc};
 use diesel::SqliteConnection;
@@ -17,8 +19,18 @@ pub struct PlayerInfo {
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Hash, Serialize)]
 pub struct SetId(u64);
+
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Hash, Serialize)]
 pub struct PlayerId(u64);
+
+impl FromStr for PlayerId {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        s.parse()
+    }
+}
+
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Hash, Serialize)]
 pub struct TierId(u64);
 

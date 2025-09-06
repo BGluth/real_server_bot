@@ -43,7 +43,10 @@ fn run() -> anyhow::Result<()> {
 
             interactive_loop(start_date, db);
         }
+        EntryCommand::GetPlayerSets(_) => todo!(),
+        EntryCommand::GetPlayerId(_) => todo!(),
         EntryCommand::PrintMonth(_) => todo!(),
+        EntryCommand::TracePlayerMonthStats(_) => todo!(),
     }
 
     Ok(())
