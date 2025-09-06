@@ -14,6 +14,7 @@ use crate::{
 
 mod interactive;
 mod prog_args;
+mod report_gen;
 mod types;
 
 fn main() -> anyhow::Result<()> {

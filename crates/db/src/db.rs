@@ -75,4 +75,4 @@ impl MatchDb {
 }
 
 #[derive(Clone, Copy, Debug)]
-struct SpecificMonth {}
+pub struct SpecificMonth {}
