@@ -38,6 +38,8 @@ pub(crate) fn interactive_loop(active_date: SetDate, db: MatchDb) {
 fn process_and_handle_user_input(state: &mut InteractiveState) -> anyhow::Result<bool> {
     let mut should_exit = false;
 
+    print!(">>> ");
+
     let input = read_input_from_stdin();
 
     let mut words = input.split(",");
@@ -100,7 +102,7 @@ fn read_input_from_stdin() -> String {
 fn check_and_add_player_info_if_discord_user_id_unknown(
     db: &mut MatchDb,
     discord_ident: DiscordUserIdentifier,
-) -> anyhow::Result<PlayerInfo> {
+) -> anyhow::Result<()> {
     // For now just assume that it's always going to be an integer id.
 
     let discord_id = match discord_ident {
@@ -108,12 +110,11 @@ fn check_and_add_player_info_if_discord_user_id_unknown(
         DiscordUserIdentifier::Id(id) => id,
     };
 
-    let p_info = match db.get_player_info_for_discord_user_id(discord_id)? {
-        Some(p_info) => p_info,
-        None => get_and_add_user_input_for_player_name_and_tier_to_db(db, discord_id)?,
+    if (db.get_player_info_for_discord_user_id(discord_id)?).is_none() {
+        get_and_add_user_input_for_player_name_and_tier_to_db(db, discord_id)?;
     };
 
-    Ok(p_info)
+    Ok(())
 }
 
 fn get_and_add_user_input_for_player_name_and_tier_to_db(
