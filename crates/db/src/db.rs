@@ -1,10 +1,9 @@
-use std::str::FromStr;
-
 use camino::Utf8Path;
 use chrono::{DateTime, Utc};
 use diesel::SqliteConnection;
-use reals_server_bot_common::types::{DiscordUserId, GameSetData, PlayerId, SetId, TierId, TierInfo};
-use serde::{Deserialize, Serialize};
+use reals_server_bot_common::types::{
+    DiscordUserId, GameSetData, PlayerId, SetId, TierId, TierInfo,
+};
 
 pub struct PlayedSet {
     pub game_data: GameSetData,
