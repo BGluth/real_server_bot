@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, ops::Not};
 
 use camino::Utf8Path;
 use serde::Deserialize;
@@ -7,7 +7,34 @@ use crate::types::{GameSetData, SetType, TierId};
 
 #[derive(Debug, Deserialize)]
 pub struct TierState {
-    tier_map: [[HashMap<SetType, (i32, i32)>; 3]; 3],
+    tier_map: [HashMap<SetType, [[i32; 2]; 3]>; 3],
+}
+
+impl Default for TierState {
+    fn default() -> Self {
+        Self {
+            tier_map: [
+                HashMap::from([
+                    (SetType::Ft2, [[7, -1], [5, -1], [2, -2]]),
+                    (SetType::Ft3, [[7, -1], [5, -1], [2, -2]]),
+                    (SetType::Ft5, [[10, -1], [7, -2], [4, -3]]),
+                    (SetType::Ft10, [[15, -2], [9, -4], [8, -4]]),
+                ]),
+                HashMap::from([
+                    (SetType::Ft2, [[7, -1], [5, -1], [2, -2]]),
+                    (SetType::Ft3, [[7, -1], [5, -1], [2, -2]]),
+                    (SetType::Ft5, [[10, -1], [7, -2], [4, -3]]),
+                    (SetType::Ft10, [[15, -2], [9, -4], [8, -4]]),
+                ]),
+                HashMap::from([
+                    (SetType::Ft2, [[7, -1], [5, -1], [2, -2]]),
+                    (SetType::Ft3, [[7, -1], [5, -1], [2, -2]]),
+                    (SetType::Ft5, [[10, -1], [7, -2], [4, -3]]),
+                    (SetType::Ft10, [[15, -2], [9, -4], [8, -4]]),
+                ]),
+            ],
+        }
+    }
 }
 
 impl TierState {
@@ -25,24 +52,66 @@ impl TierState {
             panic!("Final set score can not be equal!");
         }
 
-        let l_win_loss = set_data.p1_info.score > set_data.p2_info.score;
-        self.lookup_point_change_for_players(l_tier, r_tier, set_data.set_type, l_win_loss)
+        let l_win_loss = WinLoss::from(set_data.p1_info.score > set_data.p2_info.score);
+        let r_win_loss = !l_win_loss;
+
+        let l_pt_change =
+            self.lookup_point_change_for_player(l_tier, r_tier, set_data.set_type, l_win_loss);
+        let r_pt_change =
+            self.lookup_point_change_for_player(r_tier, l_tier, set_data.set_type, r_win_loss);
+
+        (l_pt_change, r_pt_change)
     }
 
-    fn lookup_point_change_for_players(
+    fn lookup_point_change_for_player(
         &self,
-        l_tier: TierId,
-        r_tier: TierId,
+        p_tier: TierId,
+        other_p_tier: TierId,
         set_type: SetType,
-        l_win_loss: bool,
-    ) -> (i32, i32) {
+        win_loss: WinLoss,
+    ) -> i32 {
         // Point changes in the lookup assume that the left player won.
-        let (l_player_point_change, r_player_point_change) =
-            self.tier_map[*l_tier][*r_tier][&set_type];
+        self.tier_map[p_tier.index()][&set_type][other_p_tier.index()][win_loss.index()]
+    }
+}
 
-        match l_win_loss {
-            false => (r_player_point_change, l_player_point_change),
-            true => (l_player_point_change, r_player_point_change),
+impl TierId {
+    pub fn index(&self) -> usize {
+        self.0 - 1
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+enum WinLoss {
+    Win,
+    Loss,
+}
+
+impl From<bool> for WinLoss {
+    fn from(value: bool) -> Self {
+        match value {
+            false => Self::Win,
+            true => Self::Loss,
+        }
+    }
+}
+
+impl WinLoss {
+    fn index(&self) -> usize {
+        match self {
+            WinLoss::Win => 0,
+            WinLoss::Loss => 1,
+        }
+    }
+}
+
+impl Not for WinLoss {
+    type Output = Self;
+
+    fn not(self) -> Self::Output {
+        match self {
+            WinLoss::Win => Self::Loss,
+            WinLoss::Loss => Self::Win,
         }
     }
 }

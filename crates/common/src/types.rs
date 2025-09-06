@@ -1,4 +1,4 @@
-use std::{ops::Deref, str::FromStr};
+use std::str::FromStr;
 
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
@@ -82,12 +82,4 @@ impl FromStr for PlayerId {
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Hash, Serialize)]
-pub struct TierId(usize);
-
-impl Deref for TierId {
-    type Target = usize;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
+pub struct TierId(pub usize);
