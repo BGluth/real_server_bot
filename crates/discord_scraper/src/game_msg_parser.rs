@@ -61,11 +61,11 @@ mod tests {
             TestCase::new(
                 "Fluzzard Kazuya 5 - 0 Yoshi ./rust_man",
                 PlayerInfoForSetBuilder::default()
-                    .name("./rust_man")
+                    .user_identifier("./rust_man")
                     .score(0)
                     .character("Yoshi"),
                 PlayerInfoForSetBuilder::default()
-                    .name("Fluzzard")
+                    .user_identifier("Fluzzard")
                     .score(5)
                     .character("Kazuya"),
                 SetType::Ft5,
@@ -73,11 +73,11 @@ mod tests {
             TestCase::new(
                 "./rust_man Yoshi 3 - 2 Kazuya Fluzzard",
                 PlayerInfoForSetBuilder::default()
-                    .name("./rust_man")
+                    .user_identifier("./rust_man")
                     .score(3)
                     .character("Yoshi"),
                 PlayerInfoForSetBuilder::default()
-                    .name("Fluzzard")
+                    .user_identifier("Fluzzard")
                     .score(2)
                     .character("Kazuya"),
                 SetType::Ft3,
@@ -85,11 +85,11 @@ mod tests {
             TestCase::new(
                 "Joy C  Palu 5-3 Greninja/Incineroar nick",
                 PlayerInfoForSetBuilder::default()
-                    .name("Joy C")
+                    .user_identifier("Joy C")
                     .score(5)
                     .character("Palu"),
                 PlayerInfoForSetBuilder::default()
-                    .name("nick")
+                    .user_identifier("nick")
                     .score(3)
                     .character("Kazuya"),
                 SetType::Ft5,
@@ -97,18 +97,22 @@ mod tests {
             // If one player's characters are not reported then treat the set as not having any chars.
             TestCase::new(
                 "Karasu 5-0 Phish randoms",
-                PlayerInfoForSetBuilder::default().name("Karasu").score(5),
-                PlayerInfoForSetBuilder::default().name("Phish").score(3),
+                PlayerInfoForSetBuilder::default()
+                    .user_identifier("Karasu")
+                    .score(5),
+                PlayerInfoForSetBuilder::default()
+                    .user_identifier("Phish")
+                    .score(3),
                 SetType::Ft5,
             ),
             TestCase::new(
                 "nick greninja 5 - 1 GnW, Sora Withering.Rxse<3",
                 PlayerInfoForSetBuilder::default()
-                    .name("nick")
+                    .user_identifier("nick")
                     .score(5)
                     .character("greninja"),
                 PlayerInfoForSetBuilder::default()
-                    .name("Withering.Rxse<3")
+                    .user_identifier("Withering.Rxse<3")
                     .score(1)
                     .character("Sora"),
                 SetType::Ft5,
@@ -116,11 +120,11 @@ mod tests {
             TestCase::new(
                 "@nick greninja 10-7 ganon @Emmie Katelyn",
                 PlayerInfoForSetBuilder::default()
-                    .name("nick")
+                    .user_identifier("nick")
                     .score(10)
                     .character("greninja"),
                 PlayerInfoForSetBuilder::default()
-                    .name("Emmie Katelyn")
+                    .user_identifier("Emmie Katelyn")
                     .score(7)
                     .character("ganon"),
                 SetType::Ft10,
@@ -128,11 +132,11 @@ mod tests {
             TestCase::new(
                 "@Fluzzard Fox, Kazuya 2 - 5 Aegis @LYM? | PWR BRAIDEN 1# KIRBY FAN",
                 PlayerInfoForSetBuilder::default()
-                    .name("Fox, Kazuya")
+                    .user_identifier("Fox, Kazuya")
                     .score(2)
                     .character("Fox, Kazuya"),
                 PlayerInfoForSetBuilder::default()
-                    .name("LYM? | PWR BRAIDEN 1# KIRBY FAN")
+                    .user_identifier("LYM? | PWR BRAIDEN 1# KIRBY FAN")
                     .score(5)
                     .character("Aegis"),
                 SetType::Ft5,

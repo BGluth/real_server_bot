@@ -1,17 +1,18 @@
 use camino::Utf8Path;
 use chrono::{DateTime, Utc};
 use diesel::SqliteConnection;
-use reals_server_bot_common::types::{DiscordUserId, GameSetData};
+use reals_server_bot_common::types::{DiscordUserId, GameSetData, TierInfo};
 use serde::{Deserialize, Serialize};
 
 pub struct PlayedSet {
-    game_data: GameSetData,
-    date: DateTime<Utc>,
+    pub game_data: GameSetData,
+    pub date: DateTime<Utc>,
 }
 
 pub struct PlayerInfo {
-    name: String,
-    tier: TierId,
+    pub name: String,
+    pub tier: TierId,
+    pub discord_user_id: DiscordUserId,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Hash, Serialize)]
@@ -34,6 +35,18 @@ impl MatchDb {
         todo!()
     }
 
+    pub fn get_sets_for_month(&self, month: SpecificMonth) -> anyhow::Result<Vec<PlayedSet>> {
+        todo!()
+    }
+
+    pub fn get_set(&self, s_id: SetId) -> anyhow::Result<PlayedSet> {
+        todo!()
+    }
+
+    pub fn remove_set(&self, s_id: SetId) -> anyhow::Result<()> {
+        todo!()
+    }
+
     pub fn add_new_player(
         &mut self,
         player_id: DiscordUserId,
@@ -43,11 +56,29 @@ impl MatchDb {
         todo!()
     }
 
-    pub fn add_tier(&mut self, tier_name: String) -> anyhow::Result<TierId> {
+    pub fn add_tier(&mut self, t_name: String) -> anyhow::Result<TierId> {
         todo!()
     }
 
-    pub fn get_player_info(&self, p_id: PlayerId) -> anyhow::Result<Option<PlayerInfo>> {
+    pub fn get_tier(&self, t_id: TierId) -> anyhow::Result<TierInfo> {
+        todo!()
+    }
+
+    pub fn add_player_info(&mut self, discord_id: DiscordUserId, p_info: PlayerInfo) {
+        todo!()
+    }
+
+    pub fn get_player_tier(&self, p_id: PlayerId) -> anyhow::Result<TierId> {
+        todo!()
+    }
+
+    pub fn get_player_info_for_discord_user_id(
+        &self,
+        u_id: DiscordUserId,
+    ) -> anyhow::Result<Option<PlayerInfo>> {
         todo!()
     }
 }
+
+#[derive(Clone, Copy, Debug)]
+struct SpecificMonth {}
