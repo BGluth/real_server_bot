@@ -1357,6 +1357,8 @@ dependencies = [
 name = "reals_server_bot_common"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
+ "camino",
  "derive_builder",
  "serde",
  "thiserror 2.0.16",

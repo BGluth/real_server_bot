@@ -6,6 +6,8 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
+anyhow = "1.0.99"
+camino = "1.1.12"
 derive_builder = "0.20.2"
 serde = { version = "1.0.219", features = ["derive"] }
 thiserror = "2.0.16"

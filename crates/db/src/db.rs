@@ -3,7 +3,7 @@ use std::str::FromStr;
 use camino::Utf8Path;
 use chrono::{DateTime, Utc};
 use diesel::SqliteConnection;
-use reals_server_bot_common::types::{DiscordUserId, GameSetData, TierInfo};
+use reals_server_bot_common::types::{DiscordUserId, GameSetData, PlayerId, SetId, TierId, TierInfo};
 use serde::{Deserialize, Serialize};
 
 pub struct PlayedSet {
@@ -16,23 +16,6 @@ pub struct PlayerInfo {
     pub tier: TierId,
     pub discord_user_id: DiscordUserId,
 }
-
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Hash, Serialize)]
-pub struct SetId(u64);
-
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Hash, Serialize)]
-pub struct PlayerId(u64);
-
-impl FromStr for PlayerId {
-    type Err = anyhow::Error;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        s.parse()
-    }
-}
-
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Hash, Serialize)]
-pub struct TierId(u64);
 
 pub struct MatchDb {
     conn: SqliteConnection,

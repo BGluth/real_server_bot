@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use chrono::{DateTime, Utc};
 use clap::{Args, Parser, Subcommand};
-use reals_server_bot_db::db::PlayerId;
+use reals_server_bot_common::types::PlayerId;
 
 #[derive(Parser, Debug)]
 pub(crate) struct ProgArgs {

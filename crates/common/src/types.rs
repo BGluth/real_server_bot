@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{ops::Deref, str::FromStr};
 
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
@@ -66,3 +66,28 @@ pub enum SetType {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct TierInfo {}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Hash, Serialize)]
+pub struct SetId(u64);
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Hash, Serialize)]
+pub struct PlayerId(u64);
+
+impl FromStr for PlayerId {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        s.parse()
+    }
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Hash, Serialize)]
+pub struct TierId(usize);
+
+impl Deref for TierId {
+    type Target = usize;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
