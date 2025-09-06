@@ -1,13 +1,12 @@
 use camino::Utf8Path;
-use chrono::{DateTime, Utc};
-use diesel::SqliteConnection;
+use diesel::{Connection, SqliteConnection};
 use reals_server_bot_common::types::{
-    DiscordUserId, GameSetData, PlayerId, SetId, TierId, TierInfo,
+    DiscordUserId, GameSetData, PlayerId, SetDate, SetId, TierId, TierInfo,
 };
 
 pub struct PlayedSet {
     pub game_data: GameSetData,
-    pub date: DateTime<Utc>,
+    pub date: SetDate,
 }
 
 pub struct PlayerInfo {
@@ -22,7 +21,9 @@ pub struct MatchDb {
 
 impl MatchDb {
     pub fn open_or_crate(path: &Utf8Path) -> anyhow::Result<Self> {
-        todo!()
+        let conn = SqliteConnection::establish(path.as_ref())?;
+
+        Ok(Self { conn })
     }
 
     pub fn add_set(&mut self, set: PlayedSet) -> anyhow::Result<()> {

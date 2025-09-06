@@ -1,11 +1,12 @@
 use std::io::{Read, stdin};
 
-use reals_server_bot_common::types::{DiscordUserId, DiscordUserIdentifier};
+use reals_server_bot_common::types::{DiscordUserId, DiscordUserIdentifier, SetDate};
 use reals_server_bot_db::db::{MatchDb, PlayedSet, PlayerInfo};
 use reals_server_bot_discord_scraper::game_msg_parser::GameSetMessageParser;
 
-use crate::types::SetDate;
 use anyhow::anyhow;
+
+use crate::utils::parse_set_date_from_text;
 
 struct InteractiveState {
     set_parser: GameSetMessageParser,
@@ -86,7 +87,7 @@ fn add_set(set_str: &str, state: &mut InteractiveState) -> anyhow::Result<()> {
 }
 
 fn set_date(date_arg: &str, state: &mut InteractiveState) -> anyhow::Result<()> {
-    state.active_date = dateparser::parse(date_arg)?;
+    state.active_date = parse_set_date_from_text(date_arg)?;
     Ok(())
 }
 

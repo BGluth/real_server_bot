@@ -16,6 +16,7 @@ mod interactive;
 mod prog_args;
 mod report_gen;
 mod types;
+mod utils;
 
 fn main() -> anyhow::Result<()> {
     if let Err(err) = run() {
@@ -38,7 +39,7 @@ fn run() -> anyhow::Result<()> {
                 Some(d) => d,
                 None => {
                     info!("No date set! Using today date instead for set data!");
-                    Utc::now() // TODO: Zero out hour...
+                    Utc::now().naive_utc() // TODO: Zero out hour...
                 }
             };
 

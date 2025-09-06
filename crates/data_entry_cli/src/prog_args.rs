@@ -1,8 +1,9 @@
 use std::str::FromStr;
 
-use chrono::{DateTime, Utc};
 use clap::{Args, Parser, Subcommand};
-use reals_server_bot_common::types::PlayerId;
+use reals_server_bot_common::types::{PlayerId, SetDate};
+
+use crate::utils::parse_set_date_from_text;
 
 #[derive(Parser, Debug)]
 pub(crate) struct ProgArgs {
@@ -29,7 +30,7 @@ pub(crate) struct InteractiveArgs {
 #[derive(Args, Clone, Debug)]
 pub(crate) struct CliDate {
     #[arg(short, long)]
-    pub(crate) date: Option<DateTime<Utc>>,
+    pub(crate) date: Option<SetDate>,
 }
 
 impl FromStr for CliDate {
@@ -37,7 +38,7 @@ impl FromStr for CliDate {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Ok(CliDate {
-            date: Some(dateparser::parse(s)?),
+            date: Some(parse_set_date_from_text(s)?),
         })
     }
 }

@@ -10,6 +10,8 @@ pub type DiscordBotToken = String;
 
 pub type DiscordUserId = u64;
 
+pub type SetDate = chrono::NaiveDateTime;
+
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
 pub struct GameSetData {
     pub p1_info: PlayerInfoForSet,

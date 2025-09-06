@@ -22,13 +22,9 @@ diesel::table! {
         right_player_id -> Integer,
         left_score -> Integer,
         right_score -> Integer,
-        date_time -> Date,
+        date_time -> Timestamp,
         raw_input_text -> Text,
     }
 }
 
-diesel::allow_tables_to_appear_in_same_query!(
-    player_aliases,
-    players,
-    sets,
-);
+diesel::allow_tables_to_appear_in_same_query!(player_aliases, players, sets,);
