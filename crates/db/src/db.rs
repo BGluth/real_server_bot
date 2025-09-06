@@ -43,7 +43,7 @@ impl MatchDb {
 
     pub fn add_new_player(
         &mut self,
-        player_id: DiscordUserId,
+        discord_id: DiscordUserId,
         player_name: String,
         tier: TierId,
     ) -> anyhow::Result<PlayerId> {

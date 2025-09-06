@@ -10,5 +10,6 @@ anyhow = "1.0.99"
 camino = "1.1.12"
 chrono = "0.4.41"
 diesel = { version = "2.2.12", features = ["sqlite"] }
+dotenvy = "0.15.7"
 reals_server_bot_common ={ path = "../common" }
 serde = { version = "1.0.219", features = ["derive"] }
