@@ -1,9 +1,9 @@
 use reals_server_bot_common::types::{
     DiscordUserIdentifier, GameSetData, PlayerInfoForSet, SetType,
 };
-use regex::Regex;
+use regex::{Captures, Regex};
 
-const REGEX_STR: &str = r"<@(?<p1_disc_id>\d+)> *(?<p1_char_str>.+)? (?<pi_score>\d)+ *- *(?<p2_score>\d+) +(?<p2_char_str>.+)? *<@(?<p2_disc_id>\d+)>";
+const REGEX_STR: &str = r"<(?:@(?<p1_disc_id>\d+)|(?<p1_disc_name>.*))> *(?<p1_char_str>.+)? (?<pi_score>\d)+ *- *(?<p2_score>\d+) +(?<p2_char_str>.+)? *<(?:@(?<p2_disc_id>\d+)|(?<p2_disc_name>.*))>";
 
 #[derive(Debug)]
 pub struct GameSetMessageParser {
@@ -21,38 +21,50 @@ impl Default for GameSetMessageParser {
 impl GameSetMessageParser {
     pub fn extract_game_set_data_from_discord_msg_if_any(&self, msg: &str) -> Option<GameSetData> {
         self.regex.captures(msg).map(|captures| {
-            let p1_disc_id = captures
-                .name("p1_disc_id")
-                .unwrap()
-                .as_str()
-                .parse()
-                .unwrap();
-            let p1_char_str = captures.name("p1_char_str").map(|s| s.as_str().to_string());
-            let p1_score = captures.name("p1_score").unwrap().as_str().parse().unwrap();
+            let p1_info = extract_player_info_from_string(&captures, "1");
+            let p2_info = extract_player_info_from_string(&captures, "2");
 
-            let p2_score = captures.name("p2_score").unwrap().as_str().parse().unwrap();
-            let p2_char_str = captures.name("p2_char_str").map(|s| s.as_str().to_string());
-            let p2_disc_id = captures
-                .name("p2_disc_id")
-                .unwrap()
-                .as_str()
-                .parse()
-                .unwrap();
+            let p1_score = p1_info.score;
+            let p2_score = p2_info.score;
 
             GameSetData {
-                p1_info: PlayerInfoForSet {
-                    user_identifier: DiscordUserIdentifier::Id(p1_disc_id),
-                    score: p1_score,
-                    character: p1_char_str,
-                },
-                p2_info: PlayerInfoForSet {
-                    user_identifier: DiscordUserIdentifier::Id(p2_disc_id),
-                    score: p2_score,
-                    character: p2_char_str,
-                },
+                p1_info,
+                p2_info,
                 set_type: extract_set_type_from_scores(p1_score, p2_score),
             }
         })
+    }
+}
+
+fn extract_player_info_from_string(captures: &Captures, p_num_str: &str) -> PlayerInfoForSet {
+    let p_disc_ident = captures
+        .name("p1_disc_id")
+        .map(|id| DiscordUserIdentifier::Id(id.as_str().parse().unwrap()))
+        .or_else(|| {
+            Some(DiscordUserIdentifier::Name(
+                captures
+                    .name(&format!("p{}_disc_name", p_num_str))
+                    .unwrap()
+                    .as_str()
+                    .to_string(),
+            ))
+        })
+        .unwrap();
+
+    let p_char_str = captures
+        .name(&format!("p{}_char_str", p_num_str))
+        .map(|s| s.as_str().to_string());
+    let p_score = captures
+        .name(&format!("p{}_score", p_num_str))
+        .unwrap()
+        .as_str()
+        .parse()
+        .unwrap();
+
+    PlayerInfoForSet {
+        user_identifier: p_disc_ident,
+        score: p_score,
+        character: p_char_str,
     }
 }
 
