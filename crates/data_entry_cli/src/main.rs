@@ -31,7 +31,7 @@ fn run() -> anyhow::Result<()> {
     let db_root_path = Utf8PathBuf::from_str(&p_args.match_db_root_dir)
         .with_context(|| "Database root file is not a valid path")?;
 
-    let db = MatchDb::open_or_crate(&db_root_path)?;
+    let mut db = MatchDb::open_or_crate(&db_root_path)?;
 
     match p_args.cmd {
         EntryCommand::Interactive(interactive_args) => {
@@ -47,7 +47,14 @@ fn run() -> anyhow::Result<()> {
         }
         EntryCommand::GetPlayerSets(_) => todo!(),
         EntryCommand::GetPlayerId(_) => todo!(),
-        EntryCommand::PrintMonth(_) => todo!(),
+        EntryCommand::PrintMonth(date) => {
+            let date_to_use = match date.date {
+                Some(d) => d,
+                None => Utc::now().naive_utc(),
+            };
+
+            let all_sets_for_month = db.get_sets_for_month(date_to_use.into())?;
+        }
         EntryCommand::TracePlayerMonthStats(_) => todo!(),
     }
 

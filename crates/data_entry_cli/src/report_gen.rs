@@ -1,10 +1,13 @@
 use reals_server_bot_common::types::PlayerId;
-use reals_server_bot_db::db::{MatchDb, SpecificMonth};
+use reals_server_bot_db::{
+    db::{MatchDb, SpecificMonth},
+    model::Set,
+};
 
 #[derive(Debug)]
 pub struct MonthlyPointsReport {}
 
-pub fn create_monthly_points_report(db: &MatchDb, month: SpecificMonth) -> MonthlyPointsReport {
+pub fn create_monthly_points_report(all_sets_for_month: &[Set]) -> MonthlyPointsReport {
     todo!()
 }
 

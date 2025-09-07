@@ -140,3 +140,12 @@ pub struct SpecificMonth {
     pub month: u32,
     pub year: i32,
 }
+
+impl From<SetDate> for SpecificMonth {
+    fn from(v: SetDate) -> Self {
+        Self {
+            month: v.month(),
+            year: v.year(),
+        }
+    }
+}
