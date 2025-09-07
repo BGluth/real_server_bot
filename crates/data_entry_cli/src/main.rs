@@ -28,10 +28,10 @@ fn main() -> anyhow::Result<()> {
 
 fn run() -> anyhow::Result<()> {
     let p_args = ProgArgs::parse();
-    let db_root_path = Utf8PathBuf::from_str(&p_args.match_db_root_dir)
+    let db_path = Utf8PathBuf::from_str(&p_args.set_db_path)
         .with_context(|| "Database root file is not a valid path")?;
 
-    let mut db = MatchDb::open_or_crate(&db_root_path)?;
+    let mut db = MatchDb::open_or_crate(&db_path)?;
 
     match p_args.cmd {
         EntryCommand::Interactive(interactive_args) => {

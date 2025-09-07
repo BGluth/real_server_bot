@@ -1,4 +1,4 @@
-use std::io::{Read, stdin};
+use std::io::{Write, stdin, stdout};
 
 use reals_server_bot_common::types::{DiscordUserId, DiscordUserIdentifier, PlayerId, SetDate};
 use reals_server_bot_db::{
@@ -43,6 +43,7 @@ fn process_and_handle_user_input(state: &mut InteractiveState) -> anyhow::Result
     let mut should_exit = false;
 
     print!(">>> ");
+    stdout().flush()?;
 
     let input = read_input_from_stdin();
 
@@ -98,7 +99,7 @@ fn set_date(date_arg: &str, state: &mut InteractiveState) -> anyhow::Result<()> 
 fn read_input_from_stdin() -> String {
     let mut buf = String::new();
     stdin()
-        .read_to_string(&mut buf)
+        .read_line(&mut buf)
         .expect("Unable to read line from standard input!");
 
     buf
