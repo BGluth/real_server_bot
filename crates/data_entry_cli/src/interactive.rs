@@ -1,7 +1,10 @@
 use std::io::{Read, stdin};
 
-use reals_server_bot_common::types::{DiscordUserId, DiscordUserIdentifier, SetDate};
-use reals_server_bot_db::db::{MatchDb, PlayedSet, PlayerInfo};
+use reals_server_bot_common::types::{DiscordUserId, DiscordUserIdentifier, PlayerId, SetDate};
+use reals_server_bot_db::{
+    db::{MatchDb, PlayedSet},
+    model::Player,
+};
 use reals_server_bot_discord_scraper::game_msg_parser::GameSetMessageParser;
 
 use anyhow::anyhow;
@@ -67,11 +70,11 @@ fn add_set(set_str: &str, state: &mut InteractiveState) -> anyhow::Result<()> {
         .extract_game_set_data_from_discord_msg_if_any(set_str)
         .ok_or(anyhow!("Unable to extract set data from string!"))?;
 
-    check_and_add_player_info_if_discord_user_id_unknown(
+    let p1_id = check_and_add_player_info_if_discord_user_id_unknown(
         &mut state.db,
         set_data.p1_info.user_identifier.clone(),
     )?;
-    check_and_add_player_info_if_discord_user_id_unknown(
+    let p2_id = check_and_add_player_info_if_discord_user_id_unknown(
         &mut state.db,
         set_data.p2_info.user_identifier.clone(),
     )?;
@@ -79,9 +82,10 @@ fn add_set(set_str: &str, state: &mut InteractiveState) -> anyhow::Result<()> {
     let played_set = PlayedSet {
         game_data: set_data,
         date: state.active_date,
+        raw_input: set_str.to_string(),
     };
 
-    state.db.add_set(played_set)?;
+    state.db.add_set(played_set, p1_id, p2_id)?;
 
     Ok(())
 }
@@ -103,7 +107,7 @@ fn read_input_from_stdin() -> String {
 fn check_and_add_player_info_if_discord_user_id_unknown(
     db: &mut MatchDb,
     discord_ident: DiscordUserIdentifier,
-) -> anyhow::Result<()> {
+) -> anyhow::Result<PlayerId> {
     // For now just assume that it's always going to be an integer id.
 
     let discord_id = match discord_ident {
@@ -111,16 +115,17 @@ fn check_and_add_player_info_if_discord_user_id_unknown(
         DiscordUserIdentifier::Id(id) => id,
     };
 
-    if (db.get_player_info_for_discord_user_id(discord_id)?).is_none() {
-        get_and_add_user_input_for_player_name_and_tier_to_db(db, discord_id)?;
+    let p_info = match db.get_player_info_for_discord_user_id(discord_id)? {
+        Some(p_info) => p_info,
+        None => get_and_add_user_input_for_player_name_and_tier_to_db(db, discord_id)?,
     };
 
-    Ok(())
+    Ok(PlayerId(p_info.id as u32))
 }
 
 fn get_and_add_user_input_for_player_name_and_tier_to_db(
     db: &mut MatchDb,
     discord_id: DiscordUserId,
-) -> anyhow::Result<PlayerInfo> {
+) -> anyhow::Result<Player> {
     todo!()
 }

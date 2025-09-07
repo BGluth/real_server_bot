@@ -66,14 +66,11 @@ pub enum SetType {
     Unknown,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
-pub struct TierInfo {}
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Hash, Serialize)]
+pub struct SetId(pub u32);
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Hash, Serialize)]
-pub struct SetId(u64);
-
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Hash, Serialize)]
-pub struct PlayerId(u64);
+pub struct PlayerId(pub u32);
 
 impl FromStr for PlayerId {
     type Err = anyhow::Error;

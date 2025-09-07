@@ -12,6 +12,7 @@ diesel::table! {
         id -> Integer,
         name -> Text,
         tier_id -> Integer,
+        discord_id -> BigInt,
     }
 }
 
@@ -22,8 +23,8 @@ diesel::table! {
         right_player_id -> Integer,
         left_score -> Integer,
         right_score -> Integer,
-        date_time -> Timestamp,
         raw_input_text -> Text,
+        date_time -> Timestamp,
     }
 }
 
