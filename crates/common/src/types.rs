@@ -33,7 +33,9 @@ impl FromStr for DiscordUserIdentifier {
     type Err = InvalidDiscordPlayerIdentifier;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        todo!()
+        Ok(s.parse::<DiscordUserId>()
+            .map(DiscordUserIdentifier::Id)
+            .unwrap_or_else(|_| DiscordUserIdentifier::Name(s.to_string())))
     }
 }
 
@@ -44,7 +46,7 @@ pub struct PlayerInfoForSet {
     pub user_identifier: DiscordUserIdentifier,
     pub score: usize,
 
-    #[builder(setter(into, strip_option))]
+    #[builder(setter(into, strip_option), default)]
     pub character: Option<String>,
 }
 

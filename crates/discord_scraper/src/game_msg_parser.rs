@@ -1,11 +1,70 @@
-use reals_server_bot_common::types::GameSetData;
+use reals_server_bot_common::types::{
+    DiscordUserIdentifier, GameSetData, PlayerInfoForSet, SetType,
+};
+use regex::Regex;
 
-#[derive(Debug, Default)]
-pub struct GameSetMessageParser {}
+const REGEX_STR: &str = r"<@(?<p1_disc_id>\d+)> *(?<p1_char_str>.+)? (?<pi_score>\d)+ *- *(?<p2_score>\d+) +(?<p2_char_str>.+)? *<@(?<p2_disc_id>\d+)>";
+
+#[derive(Debug)]
+pub struct GameSetMessageParser {
+    regex: Regex,
+}
+
+impl Default for GameSetMessageParser {
+    fn default() -> Self {
+        Self {
+            regex: Regex::new(REGEX_STR).unwrap(),
+        }
+    }
+}
 
 impl GameSetMessageParser {
     pub fn extract_game_set_data_from_discord_msg_if_any(&self, msg: &str) -> Option<GameSetData> {
-        todo!()
+        self.regex.captures(msg).map(|captures| {
+            let p1_disc_id = captures
+                .name("p1_disc_id")
+                .unwrap()
+                .as_str()
+                .parse()
+                .unwrap();
+            let p1_char_str = captures.name("p1_char_str").map(|s| s.as_str().to_string());
+            let p1_score = captures.name("p1_score").unwrap().as_str().parse().unwrap();
+
+            let p2_score = captures.name("p2_score").unwrap().as_str().parse().unwrap();
+            let p2_char_str = captures.name("p2_char_str").map(|s| s.as_str().to_string());
+            let p2_disc_id = captures
+                .name("p2_disc_id")
+                .unwrap()
+                .as_str()
+                .parse()
+                .unwrap();
+
+            GameSetData {
+                p1_info: PlayerInfoForSet {
+                    user_identifier: DiscordUserIdentifier::Id(p1_disc_id),
+                    score: p1_score,
+                    character: p1_char_str,
+                },
+                p2_info: PlayerInfoForSet {
+                    user_identifier: DiscordUserIdentifier::Id(p2_disc_id),
+                    score: p2_score,
+                    character: p2_char_str,
+                },
+                set_type: extract_set_type_from_scores(p1_score, p2_score),
+            }
+        })
+    }
+}
+
+fn extract_set_type_from_scores(p1_score: usize, p2_score: usize) -> SetType {
+    let max_score = p1_score.max(p2_score);
+
+    match max_score {
+        2 => SetType::Ft2,
+        3 => SetType::Ft3,
+        5 => SetType::Ft5,
+        10 => SetType::Ft10,
+        n => SetType::Ftn(n),
     }
 }
 
@@ -50,7 +109,10 @@ mod tests {
             let parsed_res = parser.extract_game_set_data_from_discord_msg_if_any(self.input);
 
             if parsed_res != self.expected {
-                panic!("Failure on {} (Expected: {:#?})", self.input, self.expected);
+                panic!(
+                    "Failure on {} (Expected: {:#?}, Got: {:#?})",
+                    self.input, self.expected, parsed_res
+                );
             }
         }
     }
@@ -61,13 +123,13 @@ mod tests {
             TestCase::new(
                 "Fluzzard Kazuya 5 - 0 Yoshi ./rust_man",
                 PlayerInfoForSetBuilder::default()
-                    .user_identifier("./rust_man")
-                    .score(0)
-                    .character("Yoshi"),
-                PlayerInfoForSetBuilder::default()
                     .user_identifier("Fluzzard")
                     .score(5)
                     .character("Kazuya"),
+                PlayerInfoForSetBuilder::default()
+                    .user_identifier("./rust_man")
+                    .score(0)
+                    .character("Yoshi"),
                 SetType::Ft5,
             ),
             TestCase::new(
