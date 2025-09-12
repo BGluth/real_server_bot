@@ -46,14 +46,23 @@ pub struct PlayerInfoForSet {
     pub user_identifier: DiscordUserIdentifier,
     pub score: usize,
 
-    #[builder(setter(into, strip_option), default)]
-    pub character: Option<String>,
+    #[builder(setter(custom), default)]
+    pub characters: Vec<String>,
 }
 
 impl PlayerInfoForSetBuilder {
     pub fn user_identifier(&mut self, v: &str) -> &mut Self {
         self.user_identifier =
             Some(DiscordUserIdentifier::from_str(v).expect("Invalid user identifier!"));
+        self
+    }
+
+    pub fn character(&mut self, char: &str) -> &mut Self {
+        match &mut self.characters {
+            Some(chars) => chars.push(char.to_string()),
+            None => self.characters = Some(vec![char.to_string()]),
+        };
+
         self
     }
 }

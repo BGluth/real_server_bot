@@ -3,7 +3,7 @@ use reals_server_bot_common::types::{
 };
 use regex::{Captures, Regex};
 
-const REGEX_STR: &str = r"<(?:@(?<p1_disc_id>\d+)|(?<p1_disc_name>.*))> *(?<p1_char_str>.+)? (?<pi_score>\d)+ *- *(?<p2_score>\d+) +(?<p2_char_str>.+)? *<(?:@(?<p2_disc_id>\d+)|(?<p2_disc_name>.*))>";
+const REGEX_STR: &str = r"<(?:@(?<p1_disc_id>\d+)|(?<p1_disc_name>.*))> *(?<p1_char_str>[\w, \/]+)? (?<p1_score>\d+)+ *- *(?<p2_score>\d+) +(?<p2_char_str>[\w, \/]+)? *<(?:@(?<p2_disc_id>\d+)|(?<p2_disc_name>.*))>";
 
 #[derive(Debug)]
 pub struct GameSetMessageParser {
@@ -39,7 +39,7 @@ impl GameSetMessageParser {
 fn extract_player_info_from_string(captures: &Captures, p_num_str: &str) -> PlayerInfoForSet {
     let p_disc_ident = captures
         .name("p1_disc_id")
-        .map(|id| DiscordUserIdentifier::Id(id.as_str().parse().unwrap()))
+        .map(|id| DiscordUserIdentifier::Id(id.as_str().trim().parse().unwrap()))
         .or_else(|| {
             Some(DiscordUserIdentifier::Name(
                 captures
@@ -51,9 +51,17 @@ fn extract_player_info_from_string(captures: &Captures, p_num_str: &str) -> Play
         })
         .unwrap();
 
-    let p_char_str = captures
+    let p_chars_str = captures
         .name(&format!("p{}_char_str", p_num_str))
-        .map(|s| s.as_str().to_string());
+        .map(|s| {
+            s.as_str()
+                .trim()
+                .split(['/', ','])
+                .map(|char| char.trim().to_string())
+                .collect()
+        })
+        .unwrap_or_default();
+
     let p_score = captures
         .name(&format!("p{}_score", p_num_str))
         .unwrap()
@@ -64,12 +72,14 @@ fn extract_player_info_from_string(captures: &Captures, p_num_str: &str) -> Play
     PlayerInfoForSet {
         user_identifier: p_disc_ident,
         score: p_score,
-        character: p_char_str,
+        characters: p_chars_str,
     }
 }
 
 fn extract_set_type_from_scores(p1_score: usize, p2_score: usize) -> SetType {
     let max_score = p1_score.max(p2_score);
+
+    println!("MAX: {}", max_score);
 
     match max_score {
         2 => SetType::Ft2,
@@ -133,7 +143,7 @@ mod tests {
     fn msg_parse_tests() {
         let tests = vec![
             TestCase::new(
-                "Fluzzard Kazuya 5 - 0 Yoshi ./rust_man",
+                "<Fluzzard> Kazuya 5 - 0 Yoshi <./rust_man>",
                 PlayerInfoForSetBuilder::default()
                     .user_identifier("Fluzzard")
                     .score(5)
@@ -145,7 +155,7 @@ mod tests {
                 SetType::Ft5,
             ),
             TestCase::new(
-                "./rust_man Yoshi 3 - 2 Kazuya Fluzzard",
+                "<./rust_man> Yoshi 3 - 2 Kazuya <Fluzzard>",
                 PlayerInfoForSetBuilder::default()
                     .user_identifier("./rust_man")
                     .score(3)
@@ -157,7 +167,7 @@ mod tests {
                 SetType::Ft3,
             ),
             TestCase::new(
-                "Joy C  Palu 5-3 Greninja/Incineroar nick",
+                "<Joy C>  Palu 5-3 Greninja/Incineroar <nick>",
                 PlayerInfoForSetBuilder::default()
                     .user_identifier("Joy C")
                     .score(5)
@@ -165,22 +175,24 @@ mod tests {
                 PlayerInfoForSetBuilder::default()
                     .user_identifier("nick")
                     .score(3)
-                    .character("Kazuya"),
+                    .character("Greninja")
+                    .character("Incineroar"),
                 SetType::Ft5,
             ),
             // If one player's characters are not reported then treat the set as not having any chars.
             TestCase::new(
-                "Karasu 5-0 Phish randoms",
+                "<Karasu> 5-0 randoms <Phish>",
                 PlayerInfoForSetBuilder::default()
                     .user_identifier("Karasu")
                     .score(5),
                 PlayerInfoForSetBuilder::default()
                     .user_identifier("Phish")
-                    .score(3),
+                    .character("randoms")
+                    .score(0),
                 SetType::Ft5,
             ),
             TestCase::new(
-                "nick greninja 5 - 1 GnW, Sora Withering.Rxse<3",
+                "<nick> greninja 5 - 1 GnW, Sora <Withering.Rxse<3>",
                 PlayerInfoForSetBuilder::default()
                     .user_identifier("nick")
                     .score(5)
@@ -188,11 +200,12 @@ mod tests {
                 PlayerInfoForSetBuilder::default()
                     .user_identifier("Withering.Rxse<3")
                     .score(1)
+                    .character("GnW")
                     .character("Sora"),
                 SetType::Ft5,
             ),
             TestCase::new(
-                "@nick greninja 10-7 ganon @Emmie Katelyn",
+                "<nick> greninja 10-7 ganon <Emmie Katelyn>",
                 PlayerInfoForSetBuilder::default()
                     .user_identifier("nick")
                     .score(10)
@@ -204,13 +217,14 @@ mod tests {
                 SetType::Ft10,
             ),
             TestCase::new(
-                "@Fluzzard Fox, Kazuya 2 - 5 Aegis @LYM? | PWR BRAIDEN 1# KIRBY FAN",
+                "<Fluzzard> Fox, Kazuya 2 - 5 Aegis <@LYM? | PWR BRAIDEN 1# KIRBY FAN>",
                 PlayerInfoForSetBuilder::default()
-                    .user_identifier("Fox, Kazuya")
+                    .user_identifier("Fluzzard")
                     .score(2)
-                    .character("Fox, Kazuya"),
+                    .character("Fox")
+                    .character("Kazuya"),
                 PlayerInfoForSetBuilder::default()
-                    .user_identifier("LYM? | PWR BRAIDEN 1# KIRBY FAN")
+                    .user_identifier("@LYM? | PWR BRAIDEN 1# KIRBY FAN")
                     .score(5)
                     .character("Aegis"),
                 SetType::Ft5,
