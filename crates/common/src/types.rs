@@ -13,7 +13,7 @@ pub type DiscordUserId = u64;
 pub type SetDate = chrono::NaiveDateTime;
 
 #[derive(Clone, Debug, Deserialize, Eq, Hash, PartialEq, Serialize)]
-pub struct GameSetData {
+pub struct ScrappedGameSetData {
     pub p1_info: PlayerInfoForSet,
     pub p2_info: PlayerInfoForSet,
     pub set_type: SetType,
@@ -44,7 +44,7 @@ pub struct PlayerInfoForSet {
     // TODO: Also maybe support the actual player name as a string...
     #[builder(setter(custom))]
     pub user_identifier: DiscordUserIdentifier,
-    pub score: usize,
+    pub score: u32,
 
     #[builder(setter(custom), default)]
     pub characters: Vec<String>,
@@ -73,15 +73,35 @@ pub enum SetType {
     Ft3,
     Ft5,
     Ft10,
-    Ftn(usize),
+    Ftn(u32),
     Unknown,
+}
+
+impl SetType {
+    pub fn new(left_score: u32, right_score: u32) -> Self {
+        let max_score = left_score.max(right_score);
+
+        match max_score {
+            2 => SetType::Ft2,
+            3 => SetType::Ft3,
+            5 => SetType::Ft5,
+            10 => SetType::Ft10,
+            n => SetType::Ftn(n),
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Hash, Serialize)]
 pub struct SetId(pub u32);
 
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Hash, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Hash, Serialize)]
 pub struct PlayerId(pub u32);
+
+impl From<i32> for PlayerId {
+    fn from(v: i32) -> Self {
+        Self(v as u32)
+    }
+}
 
 impl FromStr for PlayerId {
     type Err = anyhow::Error;
@@ -93,3 +113,9 @@ impl FromStr for PlayerId {
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Hash, Serialize)]
 pub struct TierId(pub usize);
+
+impl From<i32> for TierId {
+    fn from(v: i32) -> Self {
+        Self(v as usize)
+    }
+}

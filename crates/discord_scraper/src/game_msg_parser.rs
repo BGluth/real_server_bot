@@ -1,5 +1,5 @@
 use reals_server_bot_common::types::{
-    DiscordUserIdentifier, GameSetData, PlayerInfoForSet, SetType,
+    DiscordUserIdentifier, PlayerInfoForSet, ScrappedGameSetData, SetType,
 };
 use regex::{Captures, Regex};
 
@@ -19,7 +19,10 @@ impl Default for GameSetMessageParser {
 }
 
 impl GameSetMessageParser {
-    pub fn extract_game_set_data_from_discord_msg_if_any(&self, msg: &str) -> Option<GameSetData> {
+    pub fn extract_game_set_data_from_discord_msg_if_any(
+        &self,
+        msg: &str,
+    ) -> Option<ScrappedGameSetData> {
         self.regex.captures(msg).map(|captures| {
             let p1_info = extract_player_info_from_string(&captures, "1");
             let p2_info = extract_player_info_from_string(&captures, "2");
@@ -27,10 +30,10 @@ impl GameSetMessageParser {
             let p1_score = p1_info.score;
             let p2_score = p2_info.score;
 
-            GameSetData {
+            ScrappedGameSetData {
                 p1_info,
                 p2_info,
-                set_type: extract_set_type_from_scores(p1_score, p2_score),
+                set_type: SetType::new(p1_score, p2_score),
             }
         })
     }
@@ -76,29 +79,15 @@ fn extract_player_info_from_string(captures: &Captures, p_num_str: &str) -> Play
     }
 }
 
-fn extract_set_type_from_scores(p1_score: usize, p2_score: usize) -> SetType {
-    let max_score = p1_score.max(p2_score);
-
-    println!("MAX: {}", max_score);
-
-    match max_score {
-        2 => SetType::Ft2,
-        3 => SetType::Ft3,
-        5 => SetType::Ft5,
-        10 => SetType::Ft10,
-        n => SetType::Ftn(n),
-    }
-}
-
 #[cfg(test)]
 mod tests {
-    use reals_server_bot_common::types::{GameSetData, PlayerInfoForSetBuilder, SetType};
+    use reals_server_bot_common::types::{PlayerInfoForSetBuilder, ScrappedGameSetData, SetType};
 
     use crate::game_msg_parser::GameSetMessageParser;
 
     struct TestCase {
         input: &'static str,
-        expected: Option<GameSetData>,
+        expected: Option<ScrappedGameSetData>,
     }
 
     impl TestCase {
@@ -108,7 +97,7 @@ mod tests {
             expected_p2_info: &PlayerInfoForSetBuilder,
             expected_set_type: SetType,
         ) -> Self {
-            let expected = GameSetData {
+            let expected = ScrappedGameSetData {
                 p1_info: expected_p1_info.clone().build().unwrap(),
                 p2_info: expected_p2_info.clone().build().unwrap(),
                 set_type: expected_set_type,

@@ -1,3 +1,5 @@
+use std::collections::{HashMap, HashSet};
+
 use anyhow::{Context, anyhow, bail};
 use camino::Utf8Path;
 use chrono::{Datelike, Days, NaiveDate, NaiveTime};
@@ -6,7 +8,7 @@ use diesel::{
     query_dsl::methods::{FilterDsl, SelectDsl},
 };
 use reals_server_bot_common::types::{
-    DiscordUserId, GameSetData, PlayerId, SetDate, SetId, TierId,
+    DiscordUserId, PlayerId, ScrappedGameSetData, SetDate, SetId, TierId,
 };
 
 use crate::{
@@ -15,7 +17,7 @@ use crate::{
 };
 
 pub struct PlayedSet {
-    pub game_data: GameSetData,
+    pub game_data: ScrappedGameSetData,
     pub date: SetDate,
     pub raw_input: String,
 }
@@ -114,6 +116,13 @@ impl MatchDb {
         todo!()
     }
 
+    pub fn get_player_info_for_player_ids(
+        &mut self,
+        p_ids: impl Iterator<Item = PlayerId>,
+    ) -> anyhow::Result<HashMap<PlayerId, Player>> {
+        todo!()
+    }
+
     pub fn get_player_info_for_discord_user_id(
         &mut self,
         u_id: DiscordUserId,
@@ -148,4 +157,15 @@ impl From<SetDate> for SpecificMonth {
             year: v.year(),
         }
     }
+}
+
+pub fn get_unique_p_ids_in_sets(sets: &[Set]) -> HashSet<PlayerId> {
+    let mut p_ids = HashSet::new();
+
+    for s in sets {
+        p_ids.insert(s.left_player_id.into());
+        p_ids.insert(s.right_player_id.into());
+    }
+
+    p_ids
 }

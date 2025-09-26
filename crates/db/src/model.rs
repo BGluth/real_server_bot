@@ -1,7 +1,7 @@
 use diesel::{Insertable, Queryable, Selectable};
 use reals_server_bot_common::types::SetDate;
 
-#[derive(Queryable, Selectable)]
+#[derive(Debug, Queryable, Selectable)]
 #[diesel(table_name = crate::schema::players)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Player {
@@ -11,15 +11,16 @@ pub struct Player {
     pub discord_id: i64,
 }
 
-#[derive(Queryable, Selectable)]
+#[derive(Debug, Queryable, Selectable)]
 #[diesel(table_name = crate::schema::player_aliases)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
+#[diesel(belongs_to(Player))]
 pub struct PlayerAlias {
     pub player_id: i32,
     pub alias: String,
 }
 
-#[derive(Queryable, Selectable)]
+#[derive(Debug, Queryable, Selectable)]
 #[diesel(table_name = crate::schema::sets)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Set {
@@ -32,7 +33,7 @@ pub struct Set {
     pub raw_input_text: String,
 }
 
-#[derive(Insertable)]
+#[derive(Debug, Insertable)]
 #[diesel(table_name = crate::schema::sets)]
 pub struct NewSet {
     pub left_player_id: i32,
@@ -43,7 +44,7 @@ pub struct NewSet {
     pub raw_input_text: String,
 }
 
-#[derive(Insertable)]
+#[derive(Debug, Insertable)]
 #[diesel(table_name = crate::schema::players)]
 pub struct NewPlayer {
     pub name: String,
